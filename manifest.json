@@ -1,0 +1,14 @@
+{
+  "id": "./",
+  "name": "إدارة نفقات جِرَب القات",
+  "short_name": "نفقات القات",
+  "description": "برنامج إدارة جِرَب القات والقطفات والنفقات والتقارير",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f3f6f2",
+  "theme_color": "#123d2b"
+}
