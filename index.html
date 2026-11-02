@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#123d2b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="نفقات القات">
+<meta name="description" content="برنامج إدارة نفقات جرب القات والقطفات والتقارير">
+<link rel="manifest" href="manifest.json">
+<title>إدارة نفقات جِرَب القات</title>
+
+<style>
+:root{
+--green:#123d2b;
+--green2:#1c6045;
+--green3:#287a58;
+--gold:#d5b56d;
+--bg:#f3f6f2;
+--white:#fff;
+--text:#24352c;
+--muted:#718078;
+--red:#c0392b;
+--border:#e1e8e2;
+}
+*{box-sizing:border-box}
+body{
+margin:0;background:var(--bg);color:var(--text);
+font-family:Tahoma,Arial,sans-serif;
+padding-bottom:calc(25px + env(safe-area-inset-bottom));
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+header{
+background:linear-gradient(135deg,var(--green),var(--green2));
+color:white;padding:24px 16px 28px;
+border-radius:0 0 25px 25px;
+box-shadow:0 5px 18px #123d2b25;
+}
+.header-top{display:flex;align-items:center;gap:12px}
+.logo{
+width:55px;height:55px;border-radius:17px;
+background:#ffffff20;border:1px solid #ffffff55;
+display:grid;place-items:center;font-size:29px;
+}
+header h1{font-size:19px;margin:0 0 7px}
+header p{font-size:12px;margin:0;color:#dce9df}
+.container{max-width:850px;margin:auto;padding:14px}
+.nav{
+display:grid;grid-template-columns:repeat(3,1fr);
+gap:8px;margin-top:-12px;position:relative;
+}
+.nav button{
+border:0;background:white;color:var(--green);
+border-radius:13px;padding:13px 5px;
+font-size:12px;font-weight:bold;
+box-shadow:0 3px 12px #0000000b;
+}
+.nav button.active{background:var(--gold);color:#302817}
+.page{display:none;margin-top:18px}
+.page.active{display:block}
+.section-title{
+font-size:17px;font-weight:bold;color:var(--green);
+margin:8px 0 14px;
+}
+.cards{
+display:grid;grid-template-columns:repeat(2,1fr);
+gap:10px;margin-bottom:17px;
+}
+.card{
+background:white;border:1px solid var(--border);
+border-radius:15px;padding:15px;
+box-shadow:0 3px 12px #00000006;
+}
+.card .label{font-size:12px;color:var(--muted);margin-bottom:8px}
+.card .value{font-size:21px;font-weight:bold;color:var(--green)}
+.card .icon{font-size:22px;margin-bottom:7px}
+.panel{
+background:white;border:1px solid var(--border);
+border-radius:16px;padding:15px;margin-bottom:14px;
+}
+label{display:block;font-size:13px;font-weight:bold;margin:12px 0 6px}
+input,select,textarea{
+width:100%;padding:12px;border:1px solid #d8e1d9;
+border-radius:10px;background:#fff;outline:none;color:var(--text);
+min-height:45px;
+}
+textarea{min-height:75px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:var(--green3)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{
+border:0;border-radius:10px;padding:12px 15px;
+font-weight:bold;background:var(--green);color:white;
+margin-top:12px;min-height:44px;
+}
+.btn.gold{background:var(--gold);color:#302817}
+.btn.gray{background:#e8eee9;color:var(--green)}
+.btn.red{background:var(--red);color:white}
+.btn.small{padding:8px 10px;font-size:12px;min-height:35px;margin:3px}
+.btn.full{width:100%}
+.list-item{
+padding:13px 0;border-bottom:1px solid var(--border);
+}
+.list-item:last-child{border:0}
+.item-head{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.item-title{font-weight:bold;color:var(--green);font-size:14px}
+.item-sub{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.8}
+.amount{font-weight:bold;color:var(--green);white-space:nowrap}
+.badge{
+display:inline-block;background:#e5f1e8;color:var(--green);
+padding:5px 9px;border-radius:20px;font-size:11px;
+}
+.empty{text-align:center;color:#89968e;padding:22px 5px;font-size:13px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:540px;font-size:12px}
+th,td{border:1px solid var(--border);padding:10px;text-align:center}
+th{background:#eaf1eb;color:var(--green)}
+tfoot td{font-weight:bold;background:#f5f8f5}
+.notice{
+background:#fff8e8;border:1px solid #f0dfb5;color:#72591f;
+padding:11px;border-radius:10px;font-size:12px;line-height:1.8;
+margin-bottom:12px;
+}
+footer{text-align:center;color:#9aa59d;font-size:11px;padding:20px}
+@media(max-width:420px){
+.nav button{font-size:11px;padding:12px 3px}
+.row{grid-template-columns:1fr}
+.card .value{font-size:18px}
+}
+@media print{
+header,.nav,.no-print,footer{display:none!important}
+body{background:white}
+.container{max-width:none;padding:0}
+.page{display:none!important}
+#reports{display:block!important}
+.panel{border:0;box-shadow:none}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="header-top">
+<div class="logo">🌿</div>
+<div>
+<h1>إدارة نفقات جِرَب القات</h1>
+<p>نظام حسابات القطفات والنفقات</p>
+</div>
+</div>
+</header>
+
+<div class="container">
+
+<nav class="nav no-print">
+<button class="active" onclick="showPage('home',this)">🏠 الرئيسية</button>
+<button onclick="showPage('farms',this)">🌱 الجِرَبَات</button>
+<button onclick="showPage('harvests',this)">🌿 القطفات</button>
+<button onclick="showPage('expenses',this)">💰 النفقات</button>
+<button onclick="showPage('reports',this)">📊 التقارير</button>
+<button onclick="showPage('backup',this)">💾 النسخ الاحتياطي</button>
+</nav>
+
+<!-- الرئيسية -->
+<section id="home" class="page active">
+<div class="section-title">لوحة المعلومات</div>
+<div class="cards">
+<div class="card"><div class="icon">🌱</div><div class="label">عدد الجِرَبَات</div><div class="value" id="farmCount">0</div></div>
+<div class="card"><div class="icon">🌿</div><div class="label">إجمالي القطفات</div><div class="value" id="harvestCount">0</div></div>
+<div class="card"><div class="icon">📂</div><div class="label">القطفات المفتوحة</div><div class="value" id="openCount">0</div></div>
+<div class="card"><div class="icon">💰</div><div class="label">إجمالي النفقات</div><div class="value" id="expenseTotal">0</div></div>
+</div>
+
+<div class="panel">
+<div class="section-title">القطفة النشطة</div>
+<div id="activeHarvestBox" class="empty">لا توجد قطفة نشطة حالياً</div>
+</div>
+
+<div class="panel">
+<div class="section-title">آخر النفقات</div>
+<div id="recentExpenses" class="empty">لا توجد نفقات مسجلة</div>
+</div>
+</section>
+
+<!-- الجربات -->
+<section id="farms" class="page">
+<div class="section-title">إدارة الجِرَبَات</div>
+<div class="panel">
+<input type="hidden" id="farmEditId">
+<label>اسم الجِرَبَة</label>
+<input id="farmName" placeholder="مثال: الجِرَبَة الشرقية">
+<button class="btn full" onclick="saveFarm()" id="farmSaveBtn">💾 إضافة الجِرَبَة</button>
+<button class="btn gray full" onclick="clearFarmForm()">إلغاء التعديل</button>
+</div>
+<div class="panel">
+<div class="section-title">الجِرَبَات المسجلة</div>
+<div id="farmList" class="empty">لا توجد جِرَبَات</div>
+</div>
+</section>
+
+<!-- القطفات -->
+<section id="harvests" class="page">
+<div class="section-title">إدارة القطفات</div>
+<div class="panel">
+<label>اختر الجِرَبَة</label>
+<select id="harvestFarm"></select>
+<input type="hidden" id="harvestEditId">
+<div class="row">
+<div><label>تاريخ القطفة</label><input type="date" id="harvestDate"></div>
+<div><label>اسم القطفة</label><input id="harvestName" placeholder="مثال: القطفة الأولى"></div>
+</div>
+<button class="btn full" onclick="saveHarvest()" id="harvestSaveBtn">➕ بدء قطفة جديدة</button>
+<button class="btn gray full" onclick="clearHarvestForm()">إلغاء التعديل</button>
+</div>
+<div class="panel">
+<div class="section-title">سجل القطفات</div>
+<div id="harvestList" class="empty">لا توجد قطفات</div>
+</div>
+</section>
+
+<!-- النفقات -->
+<section id="expenses" class="page">
+<div class="section-title">تسجيل النفقات</div>
+<div class="panel">
+<input type="hidden" id="expenseEditId">
+<label>الجِرَبَة والقطفة</label>
+<select id="expenseHarvest"></select>
+<div class="row">
+<div><label>تاريخ النفقة</label><input type="date" id="expenseDate"></div>
+<div><label>نوع النفقة</label>
+<select id="expenseType">
+<option>سند</option><option>ديزل</option><option>سم</option>
+<option>سماد</option><option>بترول</option>
+<option>صيانة للمرشة</option><option>أخرى</option>
+</select></div>
+</div>
+<label>تفاصيل النفقة</label>
+<input id="expenseDetails" placeholder="اكتب تفاصيل النفقة">
+<label>المبلغ بالريال اليمني</label>
+<input type="number" id="expenseAmount" min="0" step="any" placeholder="0">
+<label>ملاحظات</label>
+<textarea id="expenseNotes" placeholder="ملاحظات إضافية إن وجدت"></textarea>
+<button class="btn full" onclick="saveExpense()" id="expenseSaveBtn">💾 حفظ النفقة</button>
+<button class="btn gray full" onclick="clearExpenseForm()">مسح الحقول</button>
+</div>
+<div class="panel">
+<div class="section-title">النفقات المسجلة</div>
+<div id="expenseList" class="empty">لا توجد نفقات</div>
+<div id="expenseSum" class="amount"></div>
+</div>
+</section>
+
+<!-- التقارير -->
+<section id="reports" class="page">
+<div class="section-title">التقارير والحسابات</div>
+<div class="panel no-print">
+<label>الجِرَبَة</label>
+<select id="reportFarm" onchange="updateReportHarvests()"></select>
+<label>القطفة</label>
+<select id="reportHarvest"></select>
+<div class="row">
+<div><label>من تاريخ</label><input type="date" id="reportFrom"></div>
+<div><label>إلى تاريخ</label><input type="date" id="reportTo"></div>
+</div>
+<button class="btn full" onclick="renderReport()">عرض التقرير</button>
+<button class="btn gold full" onclick="window.print()">🖨️ طباعة التقرير / PDF</button>
+</div>
+<div class="panel" id="reportArea">
+<h3 style="text-align:center;color:#123d2b">تقرير نفقات جِرَب القات</h3>
+<div id="reportSummary" class="cards"></div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>التاريخ</th><th>النوع</th><th>التفاصيل</th><th>الملاحظات</th><th>المبلغ</th></tr></thead>
+<tbody id="reportRows"></tbody>
+<tfoot><tr><td colspan="4">الإجمالي</td><td id="reportTotal">0</td></tr></tfoot>
+</table>
+</div>
+</div>
+</section>
+
+<!-- النسخ الاحتياطي -->
+<section id="backup" class="page">
+<div class="section-title">النسخ الاحتياطي واستعادة البيانات</div>
+<div class="notice">احتفظ بنسخة احتياطية بشكل دوري، خصوصاً عند تغيير الهاتف أو المتصفح. النسخة الاحتياطية تحفظ الجِرَبَات والقطفات والنفقات.</div>
+<div class="panel">
+<h3>📥 حفظ نسخة احتياطية</h3>
+<p style="font-size:12px;color:#718078">تنزيل جميع بيانات البرنامج في ملف JSON.</p>
+<button class="btn full" onclick="exportBackup()">تنزيل النسخة الاحتياطية</button>
+</div>
+<div class="panel">
+<h3>📤 استعادة نسخة احتياطية</h3>
+<p style="font-size:12px;color:#718078">اختر ملف النسخة الاحتياطية لاستعادة بياناتك.</p>
+<input type="file" id="backupFile" accept=".json,application/json">
+<button class="btn gold full" onclick="importBackup()">استعادة البيانات</button>
+</div>
+<div class="panel">
+<h3>حالة التخزين</h3>
+<div id="storageStatus" class="item-sub">جارٍ فحص التخزين...</div>
+</div>
+</section>
+
+<footer>إدارة نفقات جِرَب القات ©</footer>
+</div>
+
+<script>
+"use strict";
+
+const STORAGE_KEY="qat_expense_manager_v1";
+
+let db={
+farms:[],
+harvests:[],
+expenses:[],
+activeFarmId:null,
+activeHarvestId:null
+};
+
+let memoryOnly=false;
+
+function today(){
+const d=new Date();
+return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+
+function uid(){
+return Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+}
+
+function money(n){
+return Number(n||0).toLocaleString("en-US")+" ريال";
+}
+
+function esc(s){
+return String(s??"").replace(/[&<>"']/g,c=>({
+"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[c]));
+}
+
+function saveData(){
+try{
+localStorage.setItem(STORAGE_KEY,JSON.stringify(db));
+memoryOnly=false;
+document.getElementById("storageStatus").textContent="التخزين المحلي يعمل.";
+}catch(e){
+memoryOnly=true;
+document.getElementById("storageStatus").textContent="تعذر الحفظ الدائم في هذا المتصفح. البيانات الحالية مؤقتة؛ نزّل نسخة احتياطية.";
+}
+}
+
+function loadData(){
+try{
+const raw=localStorage.getItem(STORAGE_KEY);
+if(raw){
+const saved=JSON.parse(raw);
+db={
+farms:Array.isArray(saved.farms)?saved.farms:[],
+harvests:Array.isArray(saved.harvests)?saved.harvests:[],
+expenses:Array.isArray(saved.expenses)?saved.expenses:[],
+activeFarmId:saved.activeFarmId||null,
+activeHarvestId:saved.activeHarvestId||null
+};
+}
+}catch(e){
+alert("تعذر قراءة البيانات المحفوظة. إذا كانت لديك نسخة احتياطية يمكنك استعادتها.");
+}
+}
+
+function showPage(id,btn){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+if(btn)btn.classList.add("active");
+renderAll();
+}
+
+function farmById(id){return db.farms.find(x=>x.id===id)}
+function harvestById(id){return db.harvests.find(x=>x.id===id)}
+function farmHarvests(id){return db.harvests.filter(h=>h.farmId===id)}
+function harvestExpenses(id){return db.expenses.filter(e=>e.harvestId===id)}
+function totalExpenses(list){return list.reduce((s,e)=>s+Number(e.amount||0),0)}
+
+function saveFarm(){
+const name=document.getElementById("farmName").value.trim();
+const edit=document.getElementById("farmEditId").value;
+if(!name)return alert("اكتب اسم الجِرَبَة.");
+if(edit){
+const f=farmById(edit);
+if(f)f.name=name;
+}else{
+const f={id:uid(),name,createdAt:today()};
+db.farms.push(f);
+db.activeFarmId=f.id;
+}
+saveData();clearFarmForm();renderAll();
+}
+
+function editFarm(id){
+const f=farmById(id);if(!f)return;
+document.getElementById("farmEditId").value=id;
+document.getElementById("farmName").value=f.name;
+document.getElementById("farmSaveBtn").textContent="حفظ التعديل";
+showPage("farms",document.querySelectorAll(".nav button")[1]);
+}
+
+function clearFarmForm(){
+document.getElementById("farmEditId").value="";
+document.getElementById("farmName").value="";
+document.getElementById("farmSaveBtn").textContent="💾 إضافة الجِرَبَة";
+}
+
+function setActiveFarm(id){
+db.activeFarmId=id;
+const h=farmHarvests(id).find(x=>!x.closed);
+db.activeHarvestId=h?h.id:null;
+saveData();renderAll();
+}
+
+function deleteFarm(id){
+if(farmHarvests(id).length)return alert("لا يمكن حذف جِرَبَة لديها قطفات مسجلة.");
+if(!confirm("هل تريد حذف هذه الجِرَبَة؟"))return;
+db.farms=db.farms.filter(x=>x.id!==id);
+if(db.activeFarmId===id)db.activeFarmId=db.farms[0]?.id||null;
+saveData();renderAll();
+}
+
+function saveHarvest(){
+const farmId=document.getElementById("harvestFarm").value;
+const date=document.getElementById("harvestDate").value;
+const name=document.getElementById("harvestName").value.trim();
+const edit=document.getElementById("harvestEditId").value;
+if(!farmId)return alert("أضف جِرَبَة أولاً.");
+if(!date||!name)return alert("أكمل التاريخ واسم القطفة.");
+if(!edit&&farmHarvests(farmId).some(h=>!h.closed))
+return alert("توجد قطفة مفتوحة لهذه الجِرَبَة. أنهِ القطفة الحالية أولاً.");
+if(edit){
+const h=harvestById(edit);
+if(h){h.farmId=farmId;h.date=date;h.name=name;}
+}else{
+const h={id:uid(),farmId,date,name,closed:false,createdAt:today()};
+db.harvests.push(h);
+db.activeFarmId=farmId;
+db.activeHarvestId=h.id;
+}
+saveData();clearHarvestForm();renderAll();
+}
+
+function editHarvest(id){
+const h=harvestById(id);if(!h)return;
+document.getElementById("harvestEditId").value=id;
+document.getElementById("harvestFarm").value=h.farmId;
+document.getElementById("harvestDate").value=h.date;
+document.getElementById("harvestName").value=h.name;
+document.getElementById("harvestSaveBtn").textContent="حفظ تعديل القطفة";
+showPage("harvests",document.querySelectorAll(".nav button")[2]);
+}
+
+function clearHarvestForm(){
+document.getElementById("harvestEditId").value="";
+document.getElementById("harvestDate").value=today();
+document.getElementById("harvestName").value="";
+document.getElementById("harvestSaveBtn").textContent="➕ بدء قطفة جديدة";
+}
+
+function toggleHarvest(id){
+const h=harvestById(id);if(!h)return;
+if(!h.closed){
+if(!confirm("هل تريد إنهاء هذه القطفة؟"))return;
+h.closed=true;
+if(db.activeHarvestId===id)db.activeHarvestId=null;
+}else{
+if(farmHarvests(h.farmId).some(x=>!x.closed))
+return alert("توجد قطفة مفتوحة بالفعل لهذه الجِرَبَة.");
+h.closed=false;db.activeFarmId=h.farmId;db.activeHarvestId=id;
+}
+saveData();renderAll();
+}
+
+function deleteHarvest(id){
+if(harvestExpenses(id).length)return alert("لا يمكن حذف قطفة لديها نفقات. احذف نفقاتها أولاً.");
+if(!confirm("هل تريد حذف هذه القطفة؟"))return;
+db.harvests=db.harvests.filter(h=>h.id!==id);
+if(db.activeHarvestId===id)db.activeHarvestId=null;
+saveData();renderAll();
+}
+
+function saveExpense(){
+const harvestId=document.getElementById("expenseHarvest").value;
+const date=document.getElementById("expenseDate").value;
+const type=document.getElementById("expenseType").value;
+const details=document.getElementById("expenseDetails").value.trim();
+const amount=Number(document.getElementById("expenseAmount").value);
+const notes=document.getElementById("expenseNotes").value.trim();
+const edit=document.getElementById("expenseEditId").value;
+if(!harvestId)return alert("اختر القطفة أولاً.");
+if(!date||!Number.isFinite(amount)||amount<=0)return alert("أدخل التاريخ والمبلغ بشكل صحيح.");
+const item={date,type,details,amount,notes,harvestId};
+if(edit){
+const e=db.expenses.find(x=>x.id===edit);
+if(e)Object.assign(e,item);
+}else{
+db.expenses.push({id:uid(),...item});
+}
+saveData();clearExpenseForm();renderAll();
+}
+
+function editExpense(id){
+const e=db.expenses.find(x=>x.id===id);if(!e)return;
+document.getElementById("expenseEditId").value=id;
+document.getElementById("expenseHarvest").value=e.harvestId;
+document.getElementById("expenseDate").value=e.date;
+document.getElementById("expenseType").value=e.type;
+document.getElementById("expenseDetails").value=e.details||"";
+document.getElementById("expenseAmount").value=e.amount;
+document.getElementById("expenseNotes").value=e.notes||"";
+document.getElementById("expenseSaveBtn").textContent="حفظ تعديل النفقة";
+showPage("expenses",document.querySelectorAll(".nav button")[3]);
+}
+
+function clearExpenseForm(){
+document.getElementById("expenseEditId").value="";
+document.getElementById("expenseDate").value=today();
+document.getElementById("expenseType").value="سند";
+document.getElementById("expenseDetails").value="";
+document.getElementById("expenseAmount").value="";
+document.getElementById("expenseNotes").value="";
+document.getElementById("expenseSaveBtn").textContent="💾 حفظ النفقة";
+}
+
+function deleteExpense(id){
+if(!confirm("هل تريد حذف هذه النفقة؟"))return;
+db.expenses=db.expenses.filter(e=>e.id!==id);
+saveData();renderAll();
+}
+
+function fillSelect(id,items,placeholder,selected){
+const el=document.getElementById(id);
+if(!el)return;
+el.innerHTML=`<option value="">${placeholder}</option>`+
+items.map(x=>`<option value="${esc(x.id)}">${esc(x.label)}</option>`).join("");
+if(selected&&items.some(x=>x.id===selected))el.value=selected;
+}
+
+function renderSelects(){
+fillSelect("harvestFarm",db.farms.map(f=>({id:f.id,label:f.name})),"اختر الجِرَبَة",db.activeFarmId);
+fillSelect("expenseHarvest",db.harvests.map(h=>({
+id:h.id,label:(farmById(h.farmId)?.name||"جِرَبَة محذوفة")+" - "+h.name+(h.closed?" (منتهية)":" (مفتوحة)")
+})),"اختر القطفة",db.activeHarvestId);
+fillSelect("reportFarm",db.farms.map(f=>({id:f.id,label:f.name})),"كل الجِرَبَات",db.activeFarmId);
+updateReportHarvests();
+}
+
+function updateReportHarvests(){
+const farmId=document.getElementById("reportFarm").value;
+const list=db.harvests.filter(h=>!farmId||h.farmId===farmId)
+.map(h=>({id:h.id,label:h.name+" - "+(farmById(h.farmId)?.name||"")}));
+fillSelect("reportHarvest",list,"كل القطفات","");
+}
+
+function renderFarms(){
+const box=document.getElementById("farmList");
+if(!db.farms.length){box.innerHTML='<div class="empty">لا توجد جِرَبَات مسجلة</div>';return;}
+box.innerHTML=db.farms.map(f=>`
+<div class="list-item">
+<div class="item-head"><div class="item-title">${esc(f.name)}</div>
+${db.activeFarmId===f.id?'<span class="badge">الجِرَبَة النشطة</span>':""}</div>
+<div class="item-sub">عدد القطفات: ${farmHarvests(f.id).length}</div>
+<button class="btn small" onclick="setActiveFarm('${f.id}')">اختيار</button>
+<button class="btn small gold" onclick="editFarm('${f.id}')">تعديل</button>
+<button class="btn small red" onclick="deleteFarm('${f.id}')">حذف</button>
+</div>`).join("");
+}
+
+function renderHarvests(){
+const box=document.getElementById("harvestList");
+if(!db.harvests.length){box.innerHTML='<div class="empty">لا توجد قطفات مسجلة</div>';return;}
+box.innerHTML=[...db.harvests].reverse().map(h=>`
+<div class="list-item">
+<div class="item-head"><div class="item-title">${esc(h.name)}</div>
+<span class="badge">${h.closed?"منتهية":"مفتوحة"}</span></div>
+<div class="item-sub">الجِرَبَة: ${esc(farmById(h.farmId)?.name||"غير معروفة")}<br>
+التاريخ: ${esc(h.date)}<br>النفقات: ${money(totalExpenses(harvestExpenses(h.id)))}</div>
+<button class="btn small" onclick="toggleHarvest('${h.id}')">${h.closed?"إعادة فتح":"إنهاء القطفة"}</button>
+<button class="btn small gold" onclick="editHarvest('${h.id}')">تعديل</button>
+<button class="btn small red" onclick="deleteHarvest('${h.id}')">حذف</button>
+</div>`).join("");
+}
+
+function renderExpenses(){
+const box=document.getElementById("expenseList");
+const selected=document.getElementById("expenseHarvest").value;
+let list=[...db.expenses].filter(e=>!selected||e.harvestId===selected).sort((a,b)=>b.date.localeCompare(a.date));
+if(!list.length){box.innerHTML='<div class="empty">لا توجد نفقات مسجلة</div>';document.getElementById("expenseSum").textContent="";return;}
+box.innerHTML=list.map(e=>`
+<div class="list-item">
+<div class="item-head"><div class="item-title">${esc(e.type)} - ${esc(e.details||"بدون تفاصيل")}</div>
+<div class="amount">${money(e.amount)}</div></div>
+<div class="item-sub">التاريخ: ${esc(e.date)}<br>
+القطفة: ${esc(harvestById(e.harvestId)?.name||"غير معروفة")}
+${e.notes?"<br>ملاحظات: "+esc(e.notes):""}</div>
+<button class="btn small gold" onclick="editExpense('${e.id}')">تعديل</button>
+<button class="btn small red" onclick="deleteExpense('${e.id}')">حذف</button>
+</div>`).join("");
+document.getElementById("expenseSum").textContent="إجمالي النفقات المعروضة: "+money(totalExpenses(list));
+}
+
+function renderHome(){
+document.getElementById("farmCount").textContent=db.farms.length;
+document.getElementById("harvestCount").textContent=db.harvests.length;
+document.getElementById("openCount").textContent=db.harvests.filter(h=>!h.closed).length;
+document.getElementById("expenseTotal").textContent=money(totalExpenses(db.expenses));
+const h=harvestById(db.activeHarvestId);
+document.getElementById("activeHarvestBox").innerHTML=h?
+`<div class="item-title">${esc(h.name)}</div>
+<div class="item-sub">الجِرَبَة: ${esc(farmById(h.farmId)?.name||"")}<br>
+تاريخ البداية: ${esc(h.date)}<br>
+إجمالي النفقات: <b>${money(totalExpenses(harvestExpenses(h.id)))}</b></div>`:
+'<div class="empty">لا توجد قطفة نشطة حالياً</div>';
+const recent=[...db.expenses].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+document.getElementById("recentExpenses").innerHTML=recent.length?recent.map(e=>`
+<div class="list-item"><div class="item-head">
+<span>${esc(e.type)} - ${esc(e.details||"")}</span><b>${money(e.amount)}</b></div>
+<div class="item-sub">${esc(e.date)} | ${esc(harvestById(e.harvestId)?.name||"")}</div></div>`).join(""):'<div class="empty">لا توجد نفقات مسجلة</div>';
+}
+
+function renderReport(){
+const farmId=document.getElementById("reportFarm").value;
+const harvestId=document.getElementById("reportHarvest").value;
+const from=document.getElementById("reportFrom").value;
+const to=document.getElementById("reportTo").value;
+let list=db.expenses.filter(e=>{
+const h=harvestById(e.harvestId);
+return h&&(!farmId||h.farmId===farmId)&&(!harvestId||e.harvestId===harvestId)&&
+(!from||e.date>=from)&&(!to||e.date<=to);
+}).sort((a,b)=>a.date.localeCompare(b.date));
+document.getElementById("reportRows").innerHTML=list.length?list.map(e=>`
+<tr><td>${esc(e.date)}</td><td>${esc(e.type)}</td><td>${esc(e.details||"")}</td>
+<td>${esc(e.notes||"")}</td><td>${money(e.amount)}</td></tr>`).join(""):'<tr><td colspan="5">لا توجد بيانات للفترة المحددة</td></tr>';
+const total=totalExpenses(list);
+document.getElementById("reportTotal").textContent=money(total);
+document.getElementById("reportSummary").innerHTML=`
+<div class="card"><div class="label">عدد العمليات</div><div class="value">${list.length}</div></div>
+<div class="card"><div class="label">إجمالي النفقات</div><div class="value">${money(total)}</div></div>`;
+}
+
+function renderAll(){
+renderSelects();
+renderFarms();
+renderHarvests();
+renderExpenses();
+renderHome();
+renderReport();
+}
+
+function exportBackup(){
+const data=JSON.stringify(db,null,2);
+const blob=new Blob([data],{type:"application/json"});
+const url=URL.createObjectURL(blob);
+const a=document.createElement("a");
+a.href=url;a.download="نسخة-نفقات-القات-"+today()+".json";
+document.body.appendChild(a);a.click();a.remove();
+setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+
+function importBackup(){
+const file=document.getElementById("backupFile").files[0];
+if(!file)return alert("اختر ملف النسخة الاحتياطية أولاً.");
+const reader=new FileReader();
+reader.onload=()=>{
+try{
+const x=JSON.parse(reader.result);
+if(!Array.isArray(x.farms)||!Array.isArray(x.harvests)||!Array.isArray(x.expenses))
+throw new Error("invalid");
+if(!confirm("سيتم استبدال البيانات الحالية بالنسخة المختارة. هل تريد المتابعة؟"))return;
+db={
+farms:x.farms,harvests:x.harvests,expenses:x.expenses,
+activeFarmId:x.activeFarmId||null,activeHarvestId:x.activeHarvestId||null
+};
+saveData();renderAll();alert("تمت استعادة البيانات بنجاح.");
+}catch(e){alert("ملف النسخة الاحتياطية غير صالح.");}
+};
+reader.readAsText(file);
+}
+
+document.getElementById("expenseHarvest").addEventListener("change",renderExpenses);
+
+loadData();
+document.getElementById("harvestDate").value=today();
+document.getElementById("expenseDate").value=today();
+document.getElementById("reportFrom").value="";
+document.getElementById("reportTo").value="";
+renderAll();
+
+if("serviceWorker" in navigator){
+window.addEventListener("load",()=>{
+navigator.serviceWorker.register("./sw.js").catch(err=>{
+console.log("Service worker registration failed",err);
+});
+});
+}
+</script>
+</body>
+</html>
